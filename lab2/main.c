@@ -11,13 +11,8 @@ int* append(int* arr, int el, int size){
     return arr;
 }
 
-int* create_table(FILE *f, int *table_size) {
+int* create_table(char *content, int *table_size, int fsize) {
     int* table = malloc(sizeof(int)*0);
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    char *content = malloc(fsize);
-    fread(content, 1, fsize, f);
     
     int str_count = 0;
     table = append(table, -1, str_count++);
@@ -40,13 +35,7 @@ int* create_table(FILE *f, int *table_size) {
 //     printf("Str with num %d : %s\n",str_num+1, content);
 // }
 
-void print_str_via_mmap(FILE *f, int *table, int str_num) {
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    int fin = open("test.txt", O_RDONLY);
-    char* content = mmap(0, fsize, PROT_READ, MAP_SHARED, fin, 0);
-
+void print_str_via_mmap(char *content, int *table, int str_num, int fsize) {
     int str_size = table[str_num+1] - table[str_num]+1;
     char *result = malloc(fsize);
 
@@ -65,9 +54,15 @@ void print_arr(int* arr, int size){
 }
 
 void main(){
-    FILE *file = fopen("test.txt", "r");
+    FILE *f =  fopen("test.txt", "r");
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    int fin = open("test.txt", O_RDONLY);
+    char* content = mmap(0, fsize, PROT_READ, MAP_SHARED, fin, 0);
+
     int table_size;
-    int* table = create_table(file, &table_size);
+    int* table = create_table(content, &table_size, fsize);
     print_arr(table, table_size);
     int str_num;
     scanf("%d", &str_num);
@@ -75,8 +70,9 @@ void main(){
         if(str_num>table_size-1){
             printf("Str with num %d is not exist\n", str_num);
         } else {
-            print_str_via_mmap(file, table, str_num-1);
+            print_str_via_mmap(content, table, str_num-1, fsize);
         }
         scanf("%d", &str_num);
     }
+    munmap(fin, fsize);
 }
