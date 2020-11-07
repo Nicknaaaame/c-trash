@@ -28,8 +28,6 @@ void solution(){
             printf("1\n");
             sem_post(&sem2);
         }
-    } else{
-        wait(NULL);
     }
     if(pid1>0 && pid2==0) {
         for(int i = 0; i>=0; i++){
@@ -38,8 +36,6 @@ void solution(){
             printf("2\n");
             sem_post(&sem1);
         }      
-    } else{
-        wait(NULL);
     }
 }
 
