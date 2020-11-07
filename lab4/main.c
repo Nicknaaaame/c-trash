@@ -19,18 +19,18 @@ void solution(){
 
     pid_t pid1 = fork();
     pid_t pid2 = fork();
-    int n = 500000000;
+    int n = 5;
 
     if(pid1==0&&pid2>0) {
-        for(int i = 0; i>=0; i++){
+        for(int i = 0; i<n; i++){
             sem_wait(&sem1);
             log();
-            printf("1\n");
+            printf("1------------------\n");
             sem_post(&sem2);
         }
     }
     if(pid1>0 && pid2==0) {
-        for(int i = 0; i>=0; i++){
+        for(int i = 0; i<n; i++){
             sem_wait(&sem2);
             log();
             printf("2\n");
