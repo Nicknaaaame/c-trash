@@ -41,3 +41,4 @@ void solution(){
 void main(int argc, char* argv[]) {
     solution();
 }
+//https://stackoverflow.com/questions/54532268/sem-post-not-working-correctly-that-is-neither-its-increasing-the-value-of-sem
