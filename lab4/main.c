@@ -8,32 +8,34 @@
 
 void log(){
     printf("Logging by process with id %d\n", getpid());
-    sleep(1);
+    // sleep(1);
 }
 
 void solution(){
-    sem_t sem1;
-    sem_t sem2;
-    sem_init(&sem1,0, 1);
-    sem_init(&sem2,0, 0);
+    sem_t *sem1;
+    sem_t *sem2;
+    sem1 = sem_open("p1",  O_CREAT | O_EXCL, 0644, 1);
+    sem2 = sem_open("p2",  O_CREAT | O_EXCL, 0644, 0);
 
-    // pid_t pid1 = fork();
-    // pid_t pid2 = fork();
     int n = 500000000;
 
     if(fork()) {
         for(int i = 0; i>=0; i++){
-            sem_wait(&sem1);
-            log();
+            printf("p1 %d\n", i);
+            sem_wait(sem1);
+            //log();
             printf("1\n");
-            sem_post(&sem2);
+            sem_post(sem2);
+            printf("p1 %d\n", i);
         }
-    } else{
+    } else {
         for(int i = 0; i>=0; i++){
-            sem_wait(&sem2);
-            log();
+            printf("p2 %d\n", i);
+            sem_wait(sem2);
+            //log();
             printf("2\n");
-            sem_post(&sem1);
+            printf("%d-------\n",sem_post(sem1));
+            printf("p2 %d\n", i);
         }      
     } 
 }
@@ -41,4 +43,3 @@ void solution(){
 void main(int argc, char* argv[]) {
     solution();
 }
-//https://stackoverflow.com/questions/54532268/sem-post-not-working-correctly-that-is-neither-its-increasing-the-value-of-sem
