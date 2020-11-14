@@ -4,6 +4,7 @@
 #include <sys/fcntl.h>
 #include <semaphore.h>
 
+
 void log(FILE *f){
     fprintf(f, "Logging by process with id %d\n", getpid());
 }
@@ -11,8 +12,10 @@ void log(FILE *f){
 void solution(FILE *f){
     sem_t *sem1;
     sem_t *sem2;
-    sem1 = sem_open("/00001",  O_CREAT | O_EXCL, 0777, 1);
-    sem2 = sem_open("/00002",  O_CREAT | O_EXCL, 0777, 0);
+    char *name_sem1 = "/100";
+    char *name_sem2 = "/200";
+    sem1 = sem_open(name_sem1,  O_CREAT | O_EXCL, 0777, 1);
+    sem2 = sem_open(name_sem2,  O_CREAT | O_EXCL, 0777, 0);
 
     int n = 5;
 
@@ -22,19 +25,22 @@ void solution(FILE *f){
             log(f);
             sem_post(sem2);
         }
-        sem_unlink("/00001");
-
+        
     } else {
         for(int i = 0; i<=n; i++){
             sem_wait(sem2);
             log(f);
             sem_post(sem1);
         }
-        sem_unlink("/00002");
+        
     } 
+    sem_unlink(name_sem1);
+    sem_unlink(name_sem2);
 }
 
 void main(int argc, char* argv[]) {
-    FILE *f = fopen("log.txt", "a");
+FILE *f = fopen("log.txt", "a");
     solution(f);
+    fclose(f);
+    
 }
