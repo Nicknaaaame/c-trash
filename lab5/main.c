@@ -11,15 +11,16 @@ char* str_toupper(char *str)
     int i;
     for (i = 0; i < strlen(str); i++)
         str[i] = toupper(str[i]);
+    
+    return str;
 }
 
 int main()
 {
-    int fd1[2];
-
+    int my_pipe[2];
     char input_str[100];
 
-    if (pipe(fd1) == -1)
+    if (pipe(my_pipe) == -1)
     {
         fprintf(stderr, "Pipe Failed");
         return 1;
@@ -29,27 +30,21 @@ int main()
 
     if (fork())
     {
-        printf("if");
-        close(fd1[0]);
-        write(fd1[1], input_str, strlen(input_str) + 1);
-        close(fd1[1]);
+        close(my_pipe[0]);
+        write(my_pipe[1], input_str, strlen(input_str) + 1);
+        close(my_pipe[1]);
     }
     else
     {
-        printf("else");
-        close(fd1[1]);
+        close(my_pipe[1]);
         char str[100];
-        read(fd1[0], str, 100);
+        read(my_pipe[0], str, 100);
 
         char* result_str=str_toupper(str);
 
-        result_str[strlen(result_str)] = '\0';
-
         printf("Result string is %s", result_str);
 
-        close(fd1[0]);
+        close(my_pipe[0]);
         exit(0);
     }
-    printf("end");
-
 }
